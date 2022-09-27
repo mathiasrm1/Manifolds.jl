@@ -225,7 +225,7 @@ function check_size(M::FixedRankMatrices{m,n,k}, p::SVDMPoint) where {m,n,k}
     if (size(p.U) != (m, k)) || (length(p.S) != k) || (size(p.Vt) != (k, n))
         return DomainError(
             [size(p.U)..., length(p.S), size(p.Vt)...],
-            "The point $(p) does not lie on $(M) since the dimensions do not fit (expected $(n)x$(m) rank $(k) got $(size(p.U,1))x$(size(p.Vt,2)) rank $(size(p.S,1)).",
+            "The point $(p) does not lie on $(M) since the dimensions do not fit (expected $(m)x$(n) rank $(k) got $(size(p.U,1))x$(size(p.Vt,2)) rank $(size(p.S,1)).",
         )
     end
 end
@@ -234,7 +234,7 @@ function check_size(M::FixedRankMatrices{m,n,k}, p) where {m,n,k}
     if (size(pS.U) != (m, k)) || (length(pS.S) != k) || (size(pS.Vt) != (k, n))
         return DomainError(
             [size(pS.U)..., length(pS.S), size(pS.Vt)...],
-            "The point $(p) does not lie on $(M) since the dimensions do not fit (expected $(n)x$(m) rank $(k) got $(size(pS.U,1))x$(size(pS.Vt,2)) rank $(size(pS.S,1)).",
+            "The point $(p) does not lie on $(M) since the dimensions do not fit (expected $(m)x$(n) rank $(k) got $(size(pS.U,1))x$(size(pS.Vt,2)) rank $(size(pS.S,1)).",
         )
     end
 end
