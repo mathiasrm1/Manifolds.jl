@@ -517,6 +517,70 @@ the size of matrices on this manifold ``(m,n)``.
 """
 @generated representation_size(::FixedRankMatrices{m,n}) where {m,n} = (m, n)
 
+
+@doc raw"""
+    retract(M, p, X, ::ProjectionRetraction)
+
+Compute an SVD-based retraction on the [`FixedRankMatrices`](@ref) `M` by computing
+````math
+    q = U_kS_kV_k^\mathrm{H},
+````
+where ``U_k S_k V_k^\mathrm{H}`` is the shortened singular value decomposition ``USV^\mathrm{H}=p+X``,
+in the sense that ``S_k`` is the diagonal matrix of size ``k × k`` with the ``k`` largest
+singular values and ``U`` and ``V`` are shortened accordingly.
+"""
+retract(::FixedRankMatrices, ::Any, ::Any, ::ProjectionRetraction)
+
+function retract_project!(
+    ::FixedRankMatrices{m,n,k},
+    q::SVDMPoint,
+    p::SVDMPoint,
+    X::UMVTVector,
+) where {m,n,k}
+
+#Remember the notation: p is the basepoint, x the tangent Vector
+    UP=p.U
+    Σ=diagm(p.S)
+    VP=p.Vt'
+    M=x.M
+    QUtemp,RU=qr(x.U)
+    QU=Matrix(QUtemp)
+    QVtemp,RV=qr(x.Vt')
+    QV=Matrix(QVtemp)
+
+    S=zeros(2*k,2*k)
+	S[1:k,1:k]=Σ+M
+	S[k+1:2*k,1:k]=RU
+	S[1:k,k+1:2*k]=RV'
+    S_SVD=SVDMPoint(S,n)
+    US=S_SVD.U
+	ΣS=diagm(S_SVD.S)
+	VS=S_SVD.Vt'
+
+    @views begin
+        Σpl=ΣS[1:k,1:k]
+        Utemp=US[:,1:k]
+        Vtemp=VS[:,1:k]
+    end
+
+    Upl=hcat(UP,QU)*Utemp
+	Vpl=hcat(VP,QV)*Vtemp
+
+    #Does this not utilze the q that was allocated
+    q=SVDMPoint(Upl*Σpl*Vpl',k)
+    return q
+    end
+
+
+
+
+
+
+
+
+
+
+
 @doc raw"""
     retract(M, p, X, ::PolarRetraction)
 
