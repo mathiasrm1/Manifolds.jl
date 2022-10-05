@@ -542,10 +542,10 @@ function retract_project!(
     UP=p.U
     Σ=diagm(p.S)
     VP=p.Vt'
-    M=x.M
-    QUtemp,RU=qr(x.U)
+    M=X.M
+    QUtemp,RU=qr(X.U)
     QU=Matrix(QUtemp)
-    QVtemp,RV=qr(x.Vt')
+    QVtemp,RV=qr(X.Vt')
     QV=Matrix(QVtemp)
 
     S=zeros(2*k,2*k)
@@ -565,12 +565,17 @@ function retract_project!(
 
     Upl=hcat(UP,QU)*Utemp
 	Vpl=hcat(VP,QV)*Vtemp
-
-    #Does this not utilze the q that was allocated
-    q=SVDMPoint(Upl*Σpl*Vpl',k)
+    #Add @views here
+    q.U=Upl[:,1:k]   
+    q.S=diag(Σpl)[1:k]
+    q.Vt=Vpl'[1:k,:]
     return q
     end
 
+    #Does this not utilze the q that was allocated
+    #q=SVDMPoint(Upl*Σpl*Vpl',k)
+
+    #SVDMPoint(U[:, 1:k], S[1:k], Vt[1:k, :])
 
 
 
